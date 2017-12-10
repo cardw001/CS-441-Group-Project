@@ -23,45 +23,56 @@
       <li class="nav-item">
         <a class="nav-link" href="about.html">About </a>
       </li>
-	  <li class = "nav-item">
-	    <a class="nav-link" href="index.html">Exit</a>
-	  </li>
     </ul>
   </div>
 </nav>
 <!-- End Of NAV BAR -->
-  <?php
-  
-  		 $db = @mysqli_connect(localhost, "root", "root")
+<?php
+		 $db = @mysqli_connect(localhost, "root", "root")
          Or die("<div><p>ERROR: Unable to connect to database server.</p>" . "<p>Error Code " . mysqli_connect_errno() . ": " . mysqli_connect_error() . "</p></div>");
 		 
          @mysqli_select_db($db, "surveymonkey")
          Or die("<div><p>ERROR: The database is not available. </p>" . "<p>Error Code" . mysqli_errno() . ": " . mysqli_error() . "</p></div>");
-		 
-		 if($_POST['submit'] !== '' && isset($_POST['submit'])){
-					$password = $_POST['password'];
-					$email = $_POST['email'];
-				
-					$userPassword = "SELECT password, email FROM users WHERE email = '$email'";
-					$result = mysqli_query($db, $userPassword);
-					$row = mysqli_fetch_row($result);
-					$pass = $row[0];
-					$mail = $row[1];
-				
-				if(($password !== '' && $email !== '')&&($pass == $password && $mail == $email)){
-					    header("Location: http://localhost/Survey%20Monkey/profile.html");
-						exit();
-				}
-				else{
-					echo "<p> Username or password do not match what we have on record. Go back and try again! </p>";
-				}
-			
-		 }
-		 else{ 
-			echo "<p>Oops, something went wrong. Go back and try again!</p>";} 
-		 
-		 mysqli_close($db);
-  
-  ?>
+
+  if (isset($_POST['upload'])) {
+    
+	$file = $_FILES['file-upload']['name'];
+	$chk_ext = explode(".", $file);
+	$count = 0;
+	$size = (is_numeric($_POST['number']) ? (int)$_POST['number'] : 0); //convert to number or 0 as default
+	
+	if((strtolower(end($chk_ext)) == "csv")|| (strtolower(end($chk_ext)) == "xls")){
+		$filename = $_FILES['file-upload']['tmp_name'];
+		$handle = fopen($filename, "r");
+		
+		while((($data = fgetcsv($handle, 1000, ",")) != FALSE) && $count < $size){
+			$count++;
+			$name = $data[0];
+			$name = mb_convert_encoding($name, "EUC-JP", "auto");
+			$q1 = isset($data[1]);
+			$q2 = isset($data[2]);
+			$q3 = isset($data[3]);
+			$q4 = isset($data[4]);
+			$q5 = isset($data[5]);
+			$q6 = isset($data[6]);
+							
+		   $SQLquery = "INSERT INTO survey(name, q1, q2, q3, q4, q5, q6)
+			VALUES( '$name', '$q1', '$q2', '$q3', '$q4', '$q5', '$q6')";
+		   
+		   $q = mysqli_query($db, $SQLquery)
+		   Or die("<div><p>ERROR: Unable to execute query.</p>" . "<p>Error Code " . mysqli_connect_errno() . ": " . mysqli_connect_error() . "</p></div>");
+		}
+		fclose($handle);
+		echo "<p> Successfully imported! </p>";
+	}
+	else{
+		echo "<p> Invalid file </p>";
+	}
+  }
+?>
+<br />
+<br />
+      <div class="col-md-4 center-block">
+	  <a href="profile.html" class="btn btn-primary btn-lg active" style="width:100%"role="button" aria-pressed="true"> Return to profile </a>
 </body>
 </html>
