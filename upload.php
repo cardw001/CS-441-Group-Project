@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.2/css/bootstrap.min.css" integrity="sha384-PsH8R72JQ3SOdhVi3uxftmaW6Vc51MKb0q5P2rRUpPvrszuE4W1povHYgTpBfshb" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.2/css/bootstrap.min.css" integrity="sha384-PsH8R72JQ3SOdhVi3uxftmaW6Vc51MKb0q5P2rRUpPvrszuE4W1povHYgTpBfshb" crossorigin="anonymous">
   <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.3/umd/popper.min.js" integrity="sha384-vFJXuSJphROIrBnz7yo7oB41mKfc8JzQZiCq4NCceLEaO4IHwicKwpJf9c9IpFgh" crossorigin="anonymous"></script>
   <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.2/js/bootstrap.min.js" integrity="sha384-alpBpkh1PFOepccYVYDB4do5UnbKysX5WZXm3XxPqe5iKTfUKjNkCk9SaVuEZflJ" crossorigin="anonymous"></script>
@@ -11,8 +11,8 @@
 </head>
 <body>
 <!--Navigation bar -->
-	<nav class="navbar navbar-expand-lg navbar-light bg-light">
-  <a class="navbar-brand" href="#">
+  <nav class="navbar navbar-expand-lg navbar-light bg-light">
+  <a class="navbar-brand" href="profile.html">
     <img src="logo.jpg" width="30" height="30" alt=""> </a>
   <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
     <span class="navbar-toggler-icon"></span>
@@ -36,25 +36,24 @@
 
   if (isset($_POST['upload'])) {
     
-	$file = $_FILES['file-upload']['name'];
-	$chk_ext = explode(".", $file);
+	$file = $_FILES['file-upload']['tmp_name'];
 	$count = 0;
 	$size = (is_numeric($_POST['number']) ? (int)$_POST['number'] : 0); //convert to number or 0 as default
+	$handle = fopen($file, "r");
 	
-	if((strtolower(end($chk_ext)) == "csv")|| (strtolower(end($chk_ext)) == "xls")){
-		$filename = $_FILES['file-upload']['tmp_name'];
-		$handle = fopen($filename, "r");
-		
+	$ext = pathinfo($file, PATHINFO_EXTENSION);
+	$data = array();
+	
+	if($ext !== NULL){
 		while((($data = fgetcsv($handle, 1000, ",")) != FALSE) && $count < $size){
 			$count++;
 			$name = $data[0];
-			$name = mb_convert_encoding($name, "EUC-JP", "auto");
-			$q1 = isset($data[1]);
-			$q2 = isset($data[2]);
-			$q3 = isset($data[3]);
-			$q4 = isset($data[4]);
-			$q5 = isset($data[5]);
-			$q6 = isset($data[6]);
+			$q1 = $data[1];
+			$q2 = $data[2];
+			$q3 = $data[3];
+			$q4 = $data[4];
+			$q5 = $data[5];
+			$q6 = $data[6];
 							
 		   $SQLquery = "INSERT INTO survey(name, q1, q2, q3, q4, q5, q6)
 			VALUES( '$name', '$q1', '$q2', '$q3', '$q4', '$q5', '$q6')";
@@ -66,7 +65,7 @@
 		echo "<p> Successfully imported! </p>";
 	}
 	else{
-		echo "<p> Invalid file </p>";
+		echo "<p> Invalid file. Go back and try a different file! </p>";
 	}
   }
 ?>
