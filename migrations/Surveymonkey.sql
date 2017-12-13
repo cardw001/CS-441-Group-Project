@@ -61,7 +61,7 @@ CREATE TABLE `survey` (
 --
 
 INSERT INTO `survey` (`survey_id`, `name`, `q1`, `q2`, `q3`, `q4`, `q5`, `q6`) VALUES
-(1, 'John', 3, 3, 3, 3, 3, 3);
+(1, 'John@gmail.com', 3, 3, 3, 3, 3, 3);
 
 --
 -- Indexes for dumped tables
