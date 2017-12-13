@@ -28,51 +28,9 @@
 </nav>
 <!-- End Of NAV BAR -->
 <?php
-		 $db = @mysqli_connect(localhost, "root", "root")
-         Or die("<div><p>ERROR: Unable to connect to database server.</p>" . "<p>Error Code " . mysqli_connect_errno() . ": " . mysqli_connect_error() . "</p></div>");
-		 
-         @mysqli_select_db($db, "surveymonkey")
-         Or die("<div><p>ERROR: The database is not available. </p>" . "<p>Error Code" . mysqli_errno() . ": " . mysqli_error() . "</p></div>");
-
-	if(isset($_POST['upload'])) {
-    
-	$file = $_FILES['file-upload']['tmp_name'];
-	$count = 0;
-	$size = (is_numeric($_POST['number']) ? (int)$_POST['number'] : 0); //convert to number or 0 as default
 	
-	$ext = pathinfo($file, PATHINFO_EXTENSION);
 	
-	if($ext !== NULL){
-		$handle = fopen($file, "r");
-		$data = array();
-		
-		while((($data = fgetcsv($handle, 1000, ",")) != FALSE) && $count < $size){
-			$count++;
-			$name = $data[0];
-			$q1 = $data[1];
-			$q2 = $data[2];
-			$q3 = $data[3];
-			$q4 = $data[4];
-			$q5 = $data[5];
-			$q6 = $data[6];
-							
-		   $SQLquery = "INSERT INTO survey(name, q1, q2, q3, q4, q5, q6)
-			VALUES( '$name', '$q1', '$q2', '$q3', '$q4', '$q5', '$q6')";
-		   
-		   $q = mysqli_query($db, $SQLquery)
-		   Or die("<div><p>ERROR: Unable to execute query.</p>" . "<p>Error Code " . mysqli_connect_errno() . ": " . mysqli_connect_error() . "</p></div>");
-		}
-		
-		fclose($handle);
-		echo "<p> Successfully imported! </p>";
-	}
-	else{
-		echo "<p> Invalid file. Go back and try a different file! </p>";
-	}
-  }
-	else{
-		echo "<p> Whoops, there was an error. Go back and try again! </p>";
-	}
+	
 ?>
 <br />
 <br />
